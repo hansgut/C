@@ -183,7 +183,7 @@ char *ft_strlowcase(char *str)
 }
 // capitalize
 
-void toUppderCaseLetter(char *c)
+void toUpperCaseLetter(char *c)
 {
 	if (*c >= 'a' && *c <= 'z')
 		*c = (char)(*c - 'a' + 'A');
@@ -220,7 +220,7 @@ char *ft_strcapitalize(char *str)
 
 		if(sem)
 		{
-			toUppderCaseLetter(&str[i]);
+			toUpperCaseLetter(&str[i]);
 			sem = 0;
 		}
 		else
