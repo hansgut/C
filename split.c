@@ -1,53 +1,24 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_split.c                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: jcielesz <jcielesz@student.42warsaw.pl>    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/02/03 19:18:07 by jcielesz          #+#    #+#             */
-/*   Updated: 2024/02/03 21:01:44 by jcielesz         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+#include <stdlib.h>
 
-int	check_sep(char c, char *charset)
+int is_delim(char c, char *charset)
 {
-	int	i;
-
-	if (c == '\0')
+	if (c == 0)
 		return (1);
-	i = 0;
-	while (charset[i])
+	while(*charset)
 	{
-		if (c == charset[i])
+		if(c == *charset)
 			return (1);
-        i++;
+		charset++;
 	}
 	return (0);
 }
 
-int	count_words(char *str, char *charset)
+char copy_word(char *dest, char *src, char *charset)
 {
-	int	i;
-	int	words;
-
-	words = 0;
-	i = 0;
-	while (str[i])
-	{
-		if (check_sep(str[i + 1], charset) && !check_sep(str[i], charset))
-			words++;
-		i++;
-	}
-	return (words);
-}
-
-void	copy_word(char *dest, char *src, char *charset)
-{
-	int	i;
+	int i;
 
 	i = 0;
-	while (!check_sep(src[i], charset))
+	while(!is_delim(src[i], charset))
 	{
 		dest[i] = src[i];
 		i++;
@@ -55,13 +26,71 @@ void	copy_word(char *dest, char *src, char *charset)
 	dest[i] = 0;
 }
 
+void get_words(char **strs, char *str, char *charset)
+{
+	int i;
+	int j;
+	int word;
+
+	word = 0;
+	i = 0;
+	while(str[i])
+	{
+		if (is_delim(str[i], charset))
+			i++;
+		else
+		{
+			j = 0;
+			while(!is_delim(str[i + j], charset))
+				j++;
+			strs[word] = (char *) malloc((j + 1) * sizeof(char));
+			copy_word(strs[word], str + i, charset);
+			i += j;
+			word++;
+		}
+	}
+}
+
+int word_count(char *str, char *charset)
+{
+	int i;
+	int words;
+
+	words = 0;
+	i = 0;
+	while (str[i])
+	{
+		if (is_delim(str[i + 1], charset) && !is_delim(str[i], charset))
+			words++;
+		i++;
+	}
+	return (words);
+}
+
+char	**ft_split(char *str, char *charset)
+{
+	char **res;
+	int words;
+
+	words = word_count(str, charset);
+	res = (char **) malloc((words + 1) * sizeof(char *));
+	get_words(res, str, charset);
+	res[words] = 0;
+	return (res);
+}
+
 #include <stdio.h>
 
 int	main(void)
 {
-	printf("%i", count_words(",;,a, a", ";,"));
+	char s[] = ";;;Hello,world,m;y,own";
+	char charset[] = ",;";
+	char **r;
+	r = ft_split(s, ";,");
+	for(int i = 0; i < word_count(s, charset) + 1; i++)
+	{
+		printf("%s\n", r[i]);
+	}
+	free(r);
+	return 0;
 }
-
-// char	**ft_split(char *str, char *charset)
-// {
-// }
